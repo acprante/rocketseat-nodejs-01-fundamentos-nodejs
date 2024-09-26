@@ -25,6 +25,12 @@ export const routes = [
         handler: (req, res) => {
             const { title, description } = req.body;
 
+            if (!title && !description) {
+                return res.writeHead(400).end(
+                    JSON.stringify({ message: 'Title and description are required' })
+                )
+            }
+
             const task = {
                 id: randomUUID(),
                 title,
@@ -43,25 +49,38 @@ export const routes = [
         method: 'DELETE',
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
-            // const { id } = req.params;
-            // database.delete('tasks', id);
+            const { id } = req.params;
+            database.delete('tasks', id);
 
-            // return res.writeHead(204).end();
+            return res.writeHead(204).end();
         }
     },
     {
         method: 'PUT',
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
-            // const { id } = req.params;
-            // const { name, email } = req.body;
+            const { id } = req.params;
+            const { title, description } = req.body;
 
-            // database.update('tasks', id, {
-            //     name,
-            //     email,
-            // });
+            if (!title && !description) {
+                return res.writeHead(400).end(
+                    JSON.stringify({ message: 'Title and description are required' })
+                )
+            }
 
-            // return res.writeHead(204).end();
+            const [task] = database.select('tasks', { id });
+
+            if (!task) {
+                return res.writeHead(404).end('Task not found');
+            }
+            
+            database.update('tasks', id, {
+                title: title ?? task.title,
+                description: description ?? task.description,
+                updated_at: new Date(),
+            });
+
+            return res.writeHead(204).end();
         }
     }
 ];
