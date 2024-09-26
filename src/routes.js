@@ -94,5 +94,26 @@ export const routes = [
 
             return res.writeHead(204).end();
         }
+    },
+    {
+        method: 'PATCH',
+        path: buildRoutePath('/tasks/:id/complete'),
+        handler: (req, res) => {
+            const { id } = req.params;
+            const [task] = database.select('tasks', { id });
+
+            if (!task) {
+                return res.writeHead(404).end(
+                    JSON.stringify({ message: 'Task not found.' })
+                );
+            }
+            
+            database.update('tasks', id, {
+                completed_at: new Date(),
+                updated_at: new Date(),
+            });
+
+            return res.writeHead(204).end();
+        }
     }
 ];
