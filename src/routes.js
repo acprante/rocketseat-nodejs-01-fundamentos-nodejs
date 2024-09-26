@@ -24,8 +24,9 @@ export const routes = [
         path: buildRoutePath('/tasks'),
         handler: (req, res) => {
             const { title, description } = req.body;
+            console.log(title + ' - '+ description);
 
-            if (!title && !description) {
+            if (!title || !description) {
                 return res.writeHead(400).end(
                     JSON.stringify({ message: 'Title and description are required' })
                 )
@@ -50,6 +51,15 @@ export const routes = [
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
             const { id } = req.params;
+
+            const [task] = database.select('tasks', { id });
+
+            if (!task) {
+                return res.writeHead(404).end(
+                    JSON.stringify({ message: 'Task not found.' })
+                );
+            }
+
             database.delete('tasks', id);
 
             return res.writeHead(204).end();
@@ -62,7 +72,7 @@ export const routes = [
             const { id } = req.params;
             const { title, description } = req.body;
 
-            if (!title && !description) {
+            if (!title || !description) {
                 return res.writeHead(400).end(
                     JSON.stringify({ message: 'Title and description are required' })
                 )
@@ -71,7 +81,9 @@ export const routes = [
             const [task] = database.select('tasks', { id });
 
             if (!task) {
-                return res.writeHead(404).end('Task not found');
+                return res.writeHead(404).end(
+                    JSON.stringify({ message: 'Task not found.' })
+                );
             }
             
             database.update('tasks', id, {
