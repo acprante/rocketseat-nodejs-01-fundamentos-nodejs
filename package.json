@@ -8,5 +8,8 @@
     "dev": "node --watch src/server.js"
   },
   "author": "Ana Prante",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^5.5.6"
+  }
 }
